@@ -17,7 +17,7 @@ namespace japroj
         [DllImport(@"C:\Users\Admin\source\repos\japroj\x64\Debug\DllC.dll")]
         public static extern int addNumbers(int a, int b);
 
-        String safeFileName = "";
+        String safeFileName = "luluv2.jpg";
         public Form1()
         {
             InitializeComponent();
@@ -113,7 +113,7 @@ namespace japroj
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            label1.Text = addNumbers(1, 6).ToString();
+            label1.Text = addNumbers(1, 5).ToString();
         }
     }
 }

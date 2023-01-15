@@ -103,6 +103,9 @@
   <ItemGroup>
     <None Include="Resources\luluv21.png" />
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\luluv2.jpg" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>
