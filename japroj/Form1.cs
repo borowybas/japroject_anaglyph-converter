@@ -12,6 +12,7 @@ namespace japroj
 {
     public partial class Form1 : Form
     {
+        String safeFileName = "";
         public Form1()
         {
             InitializeComponent();
@@ -20,6 +21,7 @@ namespace japroj
         private void button1_Click(object sender, EventArgs e)
         {
             String imageLocation = "";
+            
             try
             {
                 OpenFileDialog dialog = new OpenFileDialog();
@@ -29,9 +31,10 @@ namespace japroj
                 {
                     imageLocation = dialog.FileName;
                     pictureBox1.ImageLocation = imageLocation;
+                    safeFileName = dialog.SafeFileName;
 
                     System.Drawing.Image imag = System.Drawing.Image.FromFile(imageLocation);
-                    imag.Save(@"C:\Users\Admin\source\repos\japroj\image.bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                    imag.Save(@"C:\Users\Admin\source\repos\japroj\"+safeFileName+".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
                 }
             }
             catch (Exception) {
@@ -51,10 +54,10 @@ namespace japroj
             try
             {
                 //retrieve the image
-                originalBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\image.bmp", true);
-                rightBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\image.bmp", true);
-                leftBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\image.bmp", true);
-                resultBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\image.bmp", true);
+                originalBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\" + safeFileName + ".bmp", true);
+                rightBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\" + safeFileName + ".bmp", true);
+                leftBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\" + safeFileName + ".bmp", true);
+                resultBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\" + safeFileName + ".bmp", true);
 
 
                 int x, y;
