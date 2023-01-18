@@ -17,6 +17,9 @@ namespace japroj
         [DllImport(@"C:\Users\Admin\source\repos\japroj\x64\Debug\DllC.dll")]
         public static extern int addNumbers(int a, int b);
 
+        [DllImport(@"C:\Users\Admin\source\repos\japroj\x64\Debug\DllAsm.dll")]
+        static extern int MyProc1(int a, int b);
+
         String safeFileName = "luluv2.jpg";
         public Form1()
         {
@@ -89,11 +92,11 @@ namespace japroj
 
                         leftBitmap.SetPixel(x, y, leftColor);
 
-                        if (x < 10)
+                        if (x < 20)
                              rightBitmap.SetPixel(x, y, Color.FromArgb(255, 255, 255));
                             
-                        if((x+10) < originalBitmap.Width)
-                            rightBitmap.SetPixel(x+10, y, rightColor);
+                        if((x+20) < originalBitmap.Width)
+                            rightBitmap.SetPixel(x+20, y, rightColor);
 
                         resultBitmap.SetPixel(x, y, Color.FromArgb(leftBitmap.GetPixel(x, y).R, rightBitmap.GetPixel(x, y).G, rightBitmap.GetPixel(x, y).B));
                         progressBar1.PerformStep();
@@ -113,7 +116,15 @@ namespace japroj
 
         private void button1_Click_1(object sender, EventArgs e)
         {
-            label1.Text = addNumbers(1, 5).ToString();
+
+            int x = 5, y = 3;
+            int retVal = MyProc1(x, y);
+
+           // label1.Text = addNumbers(1, 5).ToString();
+
+            label1.Text = retVal.ToString();
+
+
         }
     }
 }
