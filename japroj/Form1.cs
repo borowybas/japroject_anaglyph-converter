@@ -20,38 +20,32 @@ namespace japroj
         [DllImport(@"C:\Users\Admin\source\repos\japroj\x64\Debug\DllAsm.dll")]
         static extern int MyProc1(int a, int b);
 
-        String safeFileName = "luluv2.jpg";
         public Form1()
         {
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
-        {
-            String imageLocation = "";
-            
+        private void chooseFileButton_Click(object sender, EventArgs e)
+        {            
             try
             {
                 OpenFileDialog dialog = new OpenFileDialog();
-                dialog.Filter = "jpg files(.*jpg)|*.jpg| PNG files(.*png)|*.png| All Files(*.*)|*.*";
+                dialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.tif;...";
 
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
-                    imageLocation = dialog.FileName;
-                    pictureBox1.ImageLocation = imageLocation;
-                    safeFileName = dialog.SafeFileName;
+                    pictureBox1.ImageLocation = dialog.FileName;
+                    originalBitmap = new Bitmap(dialog.FileName);//dynamic cast to do
 
-                    System.Drawing.Image imag = System.Drawing.Image.FromFile(imageLocation);
-                    imag.Save(@"C:\Users\Admin\source\repos\japroj\"+safeFileName+".bmp", System.Drawing.Imaging.ImageFormat.Bmp);
+                    if (radioButton1.Checked || radioButton2.Checked)
+                        convertButton.Enabled = true;
                 }
             }
             catch (Exception) {
                 MessageBox.Show("An Error Occured", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-
-
-
         }
+        
 
         Bitmap originalBitmap;
         Bitmap rightBitmap;//cyjan
@@ -71,10 +65,9 @@ namespace japroj
             try
             {
                 //retrieve the image
-                originalBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\" + safeFileName + ".bmp", true);
-                rightBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\" + safeFileName + ".bmp", true);
-                leftBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\" + safeFileName + ".bmp", true);
-                resultBitmap = new Bitmap(@"C:\Users\Admin\source\repos\japroj\" + safeFileName + ".bmp", true);
+                rightBitmap = new Bitmap(originalBitmap);
+                leftBitmap = new Bitmap(originalBitmap);
+                resultBitmap = new Bitmap(originalBitmap);
 
                 // Set Maximum to the total number of files to copy.
                 progressBar1.Maximum = originalBitmap.Width * originalBitmap.Height;
@@ -126,5 +119,21 @@ namespace japroj
 
 
         }
+
+
+        private void radioButton2_CheckedChanged(object sender, EventArgs e)
+        {
+            if (pictureBox1.ImageLocation != null)
+                convertButton.Enabled = true;
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (pictureBox1.ImageLocation != null)
+                convertButton.Enabled = true;
+
+        }
+
+       
     }
 }
