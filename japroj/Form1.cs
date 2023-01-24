@@ -19,7 +19,7 @@ namespace japroj
         public static extern void convertCPP(byte[] leftRgbValues, byte[] rightRgbValues, int bytesLength);
 
         [DllImport(@"C:\Users\Admin\source\repos\japroj\x64\Debug\DllAsm.dll")]
-        static extern int MyProc1(int a, int b);
+        static extern int convertASM(byte[] leftRgbValues, byte[] rightRgbValues, int bytesLength);
 
         public Form1()
         {
@@ -69,10 +69,10 @@ namespace japroj
             }
         }
 
-        Bitmap originalBitmap;
+        //Bitmap originalBitmap;
         Bitmap rightBitmap;//cyjan
         Bitmap leftBitmap;//red
-        Bitmap resultBitmap;
+        //Bitmap resultBitmap;
         bool asmConvert = false;
         private void convertButton_Click(object sender, EventArgs e)
         {
@@ -135,16 +135,10 @@ namespace japroj
 
         private void lockUnlockBits()
         {
-            // Create a new bitmap.
-            //Bitmap bmp = new Bitmap("c:\\fakePhoto.jpg");
-            //originalBitmap
-
-            // Lock the bitmap's bits.  
-            //Bitmap resultBmp = new Bitmap(originalBitmap.Width+20, originalBitmap.Height);
+            // Lock the bitmap's bits.
             Rectangle leftRect = new Rectangle(0, 0, leftBitmap.Width, leftBitmap.Height);
             Rectangle rightRect = new Rectangle(0, 0, rightBitmap.Width, rightBitmap.Height);
             
-
             System.Drawing.Imaging.BitmapData leftBmpData =
                 leftBitmap.LockBits(leftRect, System.Drawing.Imaging.ImageLockMode.ReadWrite,
                 leftBitmap.PixelFormat);
@@ -153,86 +147,36 @@ namespace japroj
                rightBitmap.LockBits(rightRect, System.Drawing.Imaging.ImageLockMode.WriteOnly,
                rightBitmap.PixelFormat);
 
-            // Get the address of the first line.
-            IntPtr leftPtr = leftBmpData.Scan0;
+            IntPtr leftPtr = leftBmpData.Scan0;// Get the address of the first line.
             IntPtr righttPtr = rightBmpData.Scan0;
 
-
-            // Declare an array to hold the bytes of the bitmap.
-            int leftBytes = Math.Abs(leftBmpData.Stride) * leftBitmap.Height;
+            int leftBytes = Math.Abs(leftBmpData.Stride) * leftBitmap.Height;// Declare an array to hold the bytes of the bitmap.
             byte[] leftRgbValues = new byte[leftBytes];
             int rightBytes = Math.Abs(rightBmpData.Stride) * rightBitmap.Height;
             byte[] rightRgbValues = new byte[rightBytes];
 
-
-            // Copy the RGB values into the array.
-            System.Runtime.InteropServices.Marshal.Copy(leftPtr, leftRgbValues, 0, leftBytes);
+            System.Runtime.InteropServices.Marshal.Copy(leftPtr, leftRgbValues, 0, leftBytes);// Copy the RGB values into the array.
             System.Runtime.InteropServices.Marshal.Copy(righttPtr, rightRgbValues, 0, rightBytes);
 
-
-            // Set every third value to 255. A 24bpp bitmap will look red.  
-
-            //insert convering functions here
             // (asmConvert == true) ? convertAssembly() : convertCPP(); 
             Stopwatch stopwatch = new Stopwatch();
 
             stopwatch.Start();
             if (asmConvert == true)
-                convertAssembly();
+                convertASM(leftRgbValues, rightRgbValues, leftRgbValues.Length);
             else convertCPP(leftRgbValues, rightRgbValues, leftRgbValues.Length);
             stopwatch.Stop();
 
             cConversionTime.Text = stopwatch.ElapsedMilliseconds.ToString()+" ms";
-            // Copy the RGB values back to the bitmap
-            System.Runtime.InteropServices.Marshal.Copy(leftRgbValues, 0, leftPtr, leftBytes);
+            
+            System.Runtime.InteropServices.Marshal.Copy(leftRgbValues, 0, leftPtr, leftBytes);// Copy the RGB values back to the bitmap
             System.Runtime.InteropServices.Marshal.Copy(rightRgbValues, 0, righttPtr, rightBytes);
 
-
-            // Unlock the bits.
-            leftBitmap.UnlockBits(leftBmpData);
+            leftBitmap.UnlockBits(leftBmpData);// Unlock the bits.
             rightBitmap.UnlockBits(rightBmpData);
 
-            // Draw the modified image.
-            //e.Graphics.DrawImage(originalBitmap, 0, 150);
-            pictureBox2.Image = rightBitmap;
-
+            pictureBox2.Image = rightBitmap;// Draw the modified image.
         }
-
-        private void convertCP(byte[] leftRgbValues, byte[] rightRgbValues)
-        {
-            
-
-            for (int counter = 0; counter < leftRgbValues.Length; counter += 3)
-            {//BGR
-
-
-                rightRgbValues[counter] = rightRgbValues[counter];
-                rightRgbValues[counter + 1] = rightRgbValues[counter + 1];
-                rightRgbValues[counter + 2] = leftRgbValues[counter + 2];
-
-            }
-
-
-        }
-
-        private void convertAssembly()
-        {
-
-        }
-
-        private void button1_Click_1(object sender, EventArgs e)
-        {
-
-            int x = 5, y = 3;
-            int retVal = MyProc1(x, y);
-
-           // label1.Text = addNumbers(1, 5).ToString();
-
-            label1.Text = retVal.ToString();
-
-
-        }
-
 
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
@@ -244,7 +188,6 @@ namespace japroj
         {
             if (pictureBox1.ImageLocation != null)
                 convertButton.Enabled = true; asmConvert = false;
-
         }
 
         
