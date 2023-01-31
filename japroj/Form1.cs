@@ -10,6 +10,19 @@ using System.Windows.Forms;
 using System.Runtime.InteropServices;
 using System.Diagnostics;
 
+/**
+ * Anaglyph convertion from sterescopic pair
+ *
+ * Program accepts two images in formats .jpg, .jpeg, .png. User has a posibility to choose a method of convertion algorythm 
+ * preformed by ASM dynamic lik library and C++ dynamic link library.There is a time measurment of methods preformed in dynamic 
+ * link libraries. For the resulting image, we take the red color component from the image for the left eye and the green and 
+ * blue components from the image for the right eye.
+ *
+ * @author Barbara Borowy
+ * @version 1.0
+ * @date 31.01.2023 semester 5, academic year 2022/2023
+ */
+
 namespace japroj
 {
     public partial class Form1 : Form
@@ -100,6 +113,7 @@ namespace japroj
                 "Check the path to the image file.");
             }
         }
+
 
         private void lockUnlockBits()
         {
