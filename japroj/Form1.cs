@@ -26,8 +26,20 @@ namespace japroj
             InitializeComponent();
         }
 
+        //Bitmap originalBitmap;
+        Bitmap rightBitmap;//cyjan
+        Bitmap leftBitmap;//red
+        //Bitmap resultBitmap;
+
+        //which convertion method to use
+        bool asmConvert = false;
+        /**
+         * Method that opens file dialog and lets user choose left image
+         */
         private void chooseFileButton_Click(object sender, EventArgs e)
-        {            
+        {
+            asmConvesionTime.Text = "-";
+            cConversionTime.Text = "-";
             try
             {
                 OpenFileDialog dialog = new OpenFileDialog();
@@ -36,7 +48,7 @@ namespace japroj
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     pictureBox1.ImageLocation = dialog.FileName;
-                    leftBitmap = new Bitmap(dialog.FileName);//dynamic cast to do
+                    leftBitmap = new Bitmap(dialog.FileName);
 
                     if (radioButton1.Checked || radioButton2.Checked)
                         convertButton.Enabled = true;
@@ -47,8 +59,13 @@ namespace japroj
             }
         }
 
+        /**
+         * Method that opens file dialog and lets user choose right image
+         */
         private void button2_Click(object sender, EventArgs e)
         {
+            asmConvesionTime.Text = "-";
+            cConversionTime.Text = "-";
             try
             {
                 OpenFileDialog dialog = new OpenFileDialog();
@@ -57,7 +74,7 @@ namespace japroj
                 if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 {
                     //pictureBox1.ImageLocation = dialog.FileName;
-                    rightBitmap = new Bitmap(dialog.FileName);//dynamic cast to do
+                    rightBitmap = new Bitmap(dialog.FileName);
 
                     if (radioButton1.Checked || radioButton2.Checked)
                         convertButton.Enabled = true;
@@ -69,60 +86,11 @@ namespace japroj
             }
         }
 
-        //Bitmap originalBitmap;
-        Bitmap rightBitmap;//cyjan
-        Bitmap leftBitmap;//red
-        //Bitmap resultBitmap;
-        bool asmConvert = false;
+        
         private void convertButton_Click(object sender, EventArgs e)
         {
-            // Display the ProgressBar control.
-            progressBar1.Visible = true;
-            // Set Minimum to 1 to represent the first file being copied.
-            progressBar1.Minimum = 1;
-            // Set the initial value of the ProgressBar.
-            progressBar1.Value = 1;
-            // Set the Step property to a value of 1 to represent each file being copied.
-            progressBar1.Step = 1;
-
             try
             {
-                /*
-                //retrieve the image
-                rightBitmap = new Bitmap(originalBitmap);
-                leftBitmap = new Bitmap(originalBitmap);
-                resultBitmap = new Bitmap(originalBitmap);
-
-                // Set Maximum to the total number of files to copy.
-                progressBar1.Maximum = originalBitmap.Width * originalBitmap.Height;
-
-                int x, y;
-
-                //loop through the images pixels to reset color
-                for(x=0; x< originalBitmap.Width; x++)
-                {
-                    for(y=0; y< originalBitmap.Height; y++)
-                    {
-                        Color pixelColor = originalBitmap.GetPixel(x, y);
-                        Color leftColor = Color.FromArgb(pixelColor.R, 0, 0);
-                        Color rightColor = Color.FromArgb(0, pixelColor.G, pixelColor.B);
-
-                        leftBitmap.SetPixel(x, y, leftColor);
-
-                        if (x < 20)
-                            rightBitmap.SetPixel(x, y, Color.FromArgb(255, 255, 255));
-                            
-                        if((x+20) < originalBitmap.Width)
-                            rightBitmap.SetPixel(x+20, y, rightColor);
-
-                        resultBitmap.SetPixel(x, y, Color.FromArgb(leftBitmap.GetPixel(x, y).R, rightBitmap.GetPixel(x, y).G, rightBitmap.GetPixel(x, y).B));
-                        progressBar1.PerformStep();
-                        //IntPtr f;
-                    }
-
-                }
-                pictureBox2.Image = resultBitmap;
-                */
                 lockUnlockBits();
 
             }
@@ -158,17 +126,27 @@ namespace japroj
             System.Runtime.InteropServices.Marshal.Copy(leftPtr, leftRgbValues, 0, leftBytes);// Copy the RGB values into the array.
             System.Runtime.InteropServices.Marshal.Copy(righttPtr, rightRgbValues, 0, rightBytes);
 
-            // (asmConvert == true) ? convertAssembly() : convertCPP(); 
+            
             Stopwatch stopwatch = new Stopwatch();
 
-            stopwatch.Start();
             if (asmConvert == true)
+            {
+                stopwatch.Start();
                 convertASM(leftRgbValues, rightRgbValues, leftRgbValues.Length);
-            else convertCPP(leftRgbValues, rightRgbValues, leftRgbValues.Length);
-            stopwatch.Stop();
+                stopwatch.Stop();
+                long microseconds = stopwatch.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L));
+                asmConvesionTime.Text = microseconds.ToString() + " us";
+            }
+            else
+            {
+                stopwatch.Start();
+                convertCPP(leftRgbValues, rightRgbValues, leftRgbValues.Length);
+                stopwatch.Stop();
+                long microseconds = stopwatch.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L));
+                cConversionTime.Text = microseconds.ToString() + " us";
+            }
 
-            cConversionTime.Text = stopwatch.ElapsedMilliseconds.ToString()+" ms";
-            
+
             System.Runtime.InteropServices.Marshal.Copy(leftRgbValues, 0, leftPtr, leftBytes);// Copy the RGB values back to the bitmap
             System.Runtime.InteropServices.Marshal.Copy(rightRgbValues, 0, righttPtr, rightBytes);
 
@@ -178,18 +156,53 @@ namespace japroj
             pictureBox2.Image = rightBitmap;// Draw the modified image.
         }
 
+
         private void radioButton2_CheckedChanged(object sender, EventArgs e)
         {
-            if (pictureBox1.ImageLocation != null)
+            if (rightBitmap != null && leftBitmap != null)
                 convertButton.Enabled = true; asmConvert = true;
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
         {
-            if (pictureBox1.ImageLocation != null)
+            if (rightBitmap != null && leftBitmap != null)
                 convertButton.Enabled = true; asmConvert = false;
         }
 
-        
+        private void convertMethod()
+        {
+            /*
+                //retrieve the image
+                rightBitmap = new Bitmap(originalBitmap);
+                leftBitmap = new Bitmap(originalBitmap);
+                resultBitmap = new Bitmap(originalBitmap);
+
+                int x, y;
+
+                //loop through the images pixels to reset color
+                for(x=0; x< originalBitmap.Width; x++)
+                {
+                    for(y=0; y< originalBitmap.Height; y++)
+                    {
+                        Color pixelColor = originalBitmap.GetPixel(x, y);
+                        Color leftColor = Color.FromArgb(pixelColor.R, 0, 0);
+                        Color rightColor = Color.FromArgb(0, pixelColor.G, pixelColor.B);
+
+                        leftBitmap.SetPixel(x, y, leftColor);
+
+                        if (x < 20)
+                            rightBitmap.SetPixel(x, y, Color.FromArgb(255, 255, 255));
+                            
+                        if((x+20) < originalBitmap.Width)
+                            rightBitmap.SetPixel(x+20, y, rightColor);
+
+                        resultBitmap.SetPixel(x, y, Color.FromArgb(leftBitmap.GetPixel(x, y).R, rightBitmap.GetPixel(x, y).G, rightBitmap.GetPixel(x, y).B));
+                        
+                    }
+
+                }
+                pictureBox2.Image = resultBitmap;
+                */
+        }
     }
 }
