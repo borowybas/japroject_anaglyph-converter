@@ -14,7 +14,7 @@
 .code
 
 ;**************************************************
-
+;*
 ;* Procedure convertASM that performs algorthm of convering two images to anaglyph in asm
 ;*
 ;* Input parameters:
